@@ -6,12 +6,12 @@ import (
 )
 
 type library struct {
-	mapa map[string]int
+	index map[string]int
 	stor storage
 }
 
 func (l *library) makeMap() {
-	l.mapa = make(map[string]int)
+	l.index = make(map[string]int)
 }
 
 func (l *library) SetFunc(f func(b *Book) int) {
@@ -27,11 +27,11 @@ func(l *library) Clear() {
 }
 
 
-func (l *library) AddBooks(books ...*Book) {
-	if l.mapa == nil {
+func (l *library) AddBooks(books ...*Book) error {
+	if l.index == nil {
 		l.makeMap()
 	}
-	if l.stor.getId == nil {
+	if l.stor.getID == nil {
 		l.SetFunc(func (b *Book) int {
 			name := []rune(b.name)
 			id := 0
@@ -42,38 +42,66 @@ func (l *library) AddBooks(books ...*Book) {
 			return id
 		})
 	}
+	listOfErrors := make([]string, 0)
 	for _, b := range books {
-		if _, ok := l.mapa[b.GetName()]; ok {
-			fmt.Printf("Книга %s уже есть в библиотеке \n", b.GetName())
+		if _, ok := l.index[b.GetName()]; ok {
+			listOfErrors = append(listOfErrors, b.GetName())
 		} else {
 			id := l.stor.addBook(b)
-			l.mapa[b.GetName()] = id
+			l.index[b.GetName()] = id
 			fmt.Printf("Книга %s добавлена в библиотеку \n", b.GetName())
 		}
 	}
+	if (len(listOfErrors) != 0) {
+		nameForError := ""
+		for _, name := range listOfErrors {
+			nameForError = nameForError + name + ", "
+		}
+		if (len(listOfErrors) > 1) {
+			return fmt.Errorf("Книги %s уже есть в библиотеке \n", nameForError)
+		} else {
+			return fmt.Errorf("Книга %s уже есть в библиотеке \n", listOfErrors[0])
+		}
+	}
+	return nil	
 }
 
-func (l *library) RemoveBooks(books ...*Book) {
+func (l *library) RemoveBooks(books ...*Book) error {
+	listOfErrors := make([]string, 0)
 	for _, b := range books {
-		if _, ok := l.mapa[b.GetName()]; ok {
-			err := l.stor.removeBook(l.mapa[b.GetName()])
+		if _, ok := l.index[b.GetName()]; ok {
+			err := l.stor.removeBook(l.index[b.GetName()])
 			if err != nil {
 				fmt.Println(err)
 			} else {
-				delete(l.mapa, b.GetName())
+				delete(l.index, b.GetName())
 				fmt.Printf("Книга %s удалена из библиотеки \n", b.GetName())
 			}
 		} else {
-			fmt.Printf("Книги %s нет в библиотеке \n", b.GetName())
+			listOfErrors = append(listOfErrors, b.GetName())
 		}
 	}
+	if (len(listOfErrors) != 0) {
+		nameForError := ""
+		for _, name := range listOfErrors {
+			nameForError = nameForError + name + ", "
+		}
+		if (len(listOfErrors) > 1) {
+			return fmt.Errorf("Книг %s нет в библиотеке \n", nameForError)
+		} else {
+			return fmt.Errorf("Книги %s нет в библиотеке \n", listOfErrors[0])
+		}
+	}
+	return nil
 }
 
 func (l *library) GetBook(name string) (*Book, error) {
-	ans, err := l.stor.getBook(l.mapa[name])
+	ans, err := l.stor.getBook(l.index[name])
 	return ans, err
 }
 
-func NewLibrary() *library{
-	return new(library)
+func NewLibrary(useSliceForStrorage bool) *library{
+	a := new(library)
+	a.stor = *newStorage(useSliceForStrorage)
+	return a
 }
