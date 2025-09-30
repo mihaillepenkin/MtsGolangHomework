@@ -5,7 +5,7 @@ import "fmt"
 type storage struct {
 	useSlice bool
 	slice []Book
-	mapa map[int]*Book
+	index map[int]*Book
 	getID func(b *Book) int
 }
 
@@ -25,10 +25,10 @@ func (s *storage) addBook(b *Book) int {
 		}
 		s.slice[id] = *b
 	} else {
-		if (s.mapa == nil ) {
-			s.mapa = make(map[int]*Book)
+		if (s.index == nil ) {
+			s.index = make(map[int]*Book)
 		}
-		s.mapa[id] = b
+		s.index[id] = b
 	}
 	return id
 }
@@ -40,10 +40,10 @@ func (s *storage) removeBook(id int) error {
 		}
 		s.slice[id] = *new(Book)
 	} else {
-		if _, ok := s.mapa[id]; !ok {
+		if _, ok := s.index[id]; !ok {
 			return fmt.Errorf("Нет книги с таким id в хранилище")
 		} else {
-			delete(s.mapa, id)
+			delete(s.index, id)
 		}
 
 	}
@@ -60,10 +60,10 @@ func (s *storage) getBook(id int) (*Book, error) {
 		}
 		return &s.slice[id], nil
 	} else {
-		if _, ok := s.mapa[id]; !ok {
+		if _, ok := s.index[id]; !ok {
 			return nil, fmt.Errorf("Нет книги с таким id в хранилище")
 		} else {
-			return s.mapa[id], nil
+			return s.index[id], nil
 		}
 	}
 }
