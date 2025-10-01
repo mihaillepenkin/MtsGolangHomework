@@ -8,7 +8,7 @@ import (
 
 
 func main() {
-	lib := library.NewLibrary()
+	lib := library.NewLibrary(true)
 
 	book1 := library.NewBook("War", "Long years ago....")
 	book2 := library.NewBook("World", "Long month ago....")
@@ -16,8 +16,15 @@ func main() {
 	book4 := library.NewBook("Mipt&&Mts", "Long seconds ago....")
 	books := []*library.Book{book2, book3, book4}
 
-	lib.AddBooks(book1)
-	lib.AddBooks(books...)
+	err := lib.AddBooks(book1)
+	if (err != nil) {
+		fmt.Println(err)
+	}
+	err = lib.AddBooks(books...)
+	if (err != nil) {
+		fmt.Println(err)
+	}
+	
 
 	if book, err := lib.GetBook("Misha"); err != nil {
 		fmt.Println(err)
@@ -45,7 +52,10 @@ func main() {
 		book.PrintText()
 	}
 
-	lib.AddBooks(books...)
+	err = lib.AddBooks(books...)
+	if (err != nil) {
+		fmt.Println(err)
+	}
 
 	if book, err := lib.GetBook("Misha"); err != nil {
 		fmt.Println(err)
@@ -53,7 +63,10 @@ func main() {
 		book.PrintText()
 	}
 
-	lib.RemoveBooks(books...)
+	err = lib.RemoveBooks(books...)
+	if (err != nil) {
+		fmt.Println(err)
+	}
 
 	if book, err := lib.GetBook("Misha"); err != nil {
 		fmt.Println(err)
@@ -61,7 +74,10 @@ func main() {
 		book.PrintText()
 	}
 
-	lib.RemoveBooks(book3)
+	err = lib.RemoveBooks(book3)
+	if (err != nil) {
+		fmt.Println(err)
+	}
 
 	lib.SetFunc(func (b *library.Book) int {
 			name := []rune(b.GetName())
@@ -73,7 +89,98 @@ func main() {
 			return id
 		})
 
-	lib.AddBooks(books...)
+	err = lib.AddBooks(books...)
+	if (err != nil) {
+		fmt.Println(err)
+	}
+
+	if book, err := lib.GetBook("Misha"); err != nil {
+		fmt.Println(err)
+	} else {
+		book.PrintText()
+	}
+
+	fmt.Println("Теперь проверим либу на мапе")
+
+	lib = library.NewLibrary(false)
+
+	err = lib.AddBooks(book1)
+	if (err != nil) {
+		fmt.Println(err)
+	}
+	err = lib.AddBooks(books...)
+	if (err != nil) {
+		fmt.Println(err)
+	}
+	
+
+	if book, err := lib.GetBook("Misha"); err != nil {
+		fmt.Println(err)
+	} else {
+		book.PrintText()
+	}
+
+	if book, err := lib.GetBook("War"); err != nil {
+		fmt.Println(err)
+	} else {
+		book.PrintText()
+	}
+
+	if book, err := lib.GetBook("Anatoliy"); err != nil {
+		fmt.Println(err)
+	} else {
+		book.PrintText()
+	}
+
+	lib.Clear()
+
+	if book, err := lib.GetBook("Misha"); err != nil {
+		fmt.Println(err)
+	} else {
+		book.PrintText()
+	}
+
+	err = lib.AddBooks(books...)
+	if (err != nil) {
+		fmt.Println(err)
+	}
+
+	if book, err := lib.GetBook("Misha"); err != nil {
+		fmt.Println(err)
+	} else {
+		book.PrintText()
+	}
+
+	err = lib.RemoveBooks(books...)
+	if (err != nil) {
+		fmt.Println(err)
+	}
+
+	if book, err := lib.GetBook("Misha"); err != nil {
+		fmt.Println(err)
+	} else {
+		book.PrintText()
+	}
+
+	err = lib.RemoveBooks(book3)
+	if (err != nil) {
+		fmt.Println(err)
+	}
+
+	lib.SetFunc(func (b *library.Book) int {
+			name := []rune(b.GetName())
+			id := 0
+			for ind, elem := range name {
+				id += int(elem) * (int(math.Pow(float64(17), float64(ind))))
+			}
+			id = id % 100003
+			return id
+		})
+
+	err = lib.AddBooks(books...)
+	if (err != nil) {
+		fmt.Println(err)
+	}
 
 	if book, err := lib.GetBook("Misha"); err != nil {
 		fmt.Println(err)
