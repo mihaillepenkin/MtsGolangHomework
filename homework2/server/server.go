@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-
-
 func Run() {
 	mux := http.NewServeMux()
 
@@ -22,18 +20,20 @@ func Run() {
 
 	server := &http.Server{Addr: ":8081", Handler: mux}
 
-	err := server.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	go func() {
+		err := server.ListenAndServe()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+	
 	osSignals := make(chan os.Signal, 1)
 	signal.Notify(osSignals, os.Interrupt, syscall.SIGTERM)
 	<-osSignals
 	log.Println("Graceful shutdown...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	err = server.Shutdown(ctx)
+	err := server.Shutdown(ctx)
 	if err != nil {
 		log.Fatalf("Server forced to shutdown: %v", err)
 	}

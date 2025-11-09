@@ -18,6 +18,8 @@ type decodeResult struct {
 	OutputString string `json:"outputString"`
 }
 
+const addrs string = "http://localhost:8081/"
+
 func Run() {
 	client := http.Client{}
 
@@ -25,7 +27,7 @@ func Run() {
 	//1
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:8081/version", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", addrs + "version", nil)
 	if (err != nil) {
 		log.Fatal(err)
 	}
@@ -53,7 +55,7 @@ func Run() {
 	if (err != nil) {
 		log.Fatal(err)
 	}
-	req, err = http.NewRequestWithContext(ctx, "POST", "http://localhost:8081/decode", bytes.NewBuffer(data))
+	req, err = http.NewRequestWithContext(ctx, "POST", addrs + "decode", bytes.NewBuffer(data))
 	if (err != nil) {
 		log.Fatal(err)
 	}
@@ -82,7 +84,7 @@ func Run() {
 	//3
 	ctx, cancel = context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	req, err = http.NewRequestWithContext(ctx, "GET", "http://localhost:8081/hard-op", nil)
+	req, err = http.NewRequestWithContext(ctx, "GET", addrs + "hard-op", nil)
 	if (err != nil) {
 		log.Fatal(err)
 	}
